@@ -27,7 +27,7 @@ func TestAddListenerForEvent(t *testing.T) {
 	}
 	messages := make(chan EventData)
 	evsw.AddListenerForEvent("listener", "event",
-		func (data EventData) {
+		func(data EventData) {
 			messages <- data
 		})
 	go evsw.FireEvent("event", "data")
@@ -48,7 +48,7 @@ func TestAddListenerForMultipleEvents(t *testing.T) {
 	numbers := make(chan uint64, 4)
 	// subscribe one listener for one event
 	evsw.AddListenerForEvent("listener", "event",
-		func (data EventData) {
+		func(data EventData) {
 			numbers <- data.(uint64)
 		})
 	// collect received events
@@ -66,18 +66,18 @@ func TestAddListenerForMultipleEvents(t *testing.T) {
 	}()
 	// go fire events
 	go func() {
-		var sentsum uint64 = 0
-		for i := uint64(1); i<= uint64(1000); i++ {
-			sentsum += i
+		var sentSum uint64 = 0
+		for i := uint64(1); i <= uint64(1000); i++ {
+			sentSum += i
 			evsw.FireEvent("event", i)
 		}
 		close(numbers)
-		doneSending <- sentsum
+		doneSending <- sentSum
 		close(doneSending)
 	}()
-	checksum := <-doneSending
-	eventsum := <-doneSum
-  if checksum != eventsum {
+	checkSum := <-doneSending
+	eventSum := <-doneSum
+	if checkSum != eventSum {
 		t.Errorf("Not all messages sent were received.\n")
 	}
 }
@@ -95,15 +95,15 @@ func TestAddListenerForDifferentEvents(t *testing.T) {
 	numbers := make(chan uint64, 4)
 	// subscribe one listener to three events
 	evsw.AddListenerForEvent("listener", "event1",
-		func (data EventData) {
+		func(data EventData) {
 			numbers <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener", "event3",
-		func (data EventData) {
+		func(data EventData) {
 			numbers <- data.(uint64)
 		})
 	// collect received events
@@ -121,25 +121,25 @@ func TestAddListenerForDifferentEvents(t *testing.T) {
 	}()
 	// go fire events
 	sendEvents := func(event string, doneChan chan uint64) {
-		var sentsum uint64 = 0
-		for i := uint64(1); i<= uint64(1000) ; i++ {
-			sentsum += i
+		var sentSum uint64 = 0
+		for i := uint64(1); i <= uint64(1000); i++ {
+			sentSum += i
 			evsw.FireEvent(event, i)
 		}
-		doneChan <- sentsum
+		doneChan <- sentSum
 		close(doneChan)
 		return
 	}
 	go sendEvents("event1", doneSending1)
 	go sendEvents("event2", doneSending2)
 	go sendEvents("event3", doneSending3)
-	var checksum uint64 = 0
-	checksum += <-doneSending1
-	checksum += <-doneSending2
-	checksum += <-doneSending3
+	var checkSum uint64 = 0
+	checkSum += <-doneSending1
+	checkSum += <-doneSending2
+	checkSum += <-doneSending3
 	close(numbers)
-	eventsum := <-doneSum
-  if checksum != eventsum {
+	eventSum := <-doneSum
+	if checkSum != eventSum {
 		t.Errorf("Not all messages sent were received.\n")
 	}
 }
@@ -159,23 +159,23 @@ func TestAddDifferentListenerForDifferentEvents(t *testing.T) {
 	numbers2 := make(chan uint64, 4)
 	// subscribe two listener to three events
 	evsw.AddListenerForEvent("listener1", "event1",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener1", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener1", "event3",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener2", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener2", "event3",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	// collect received events for listener1
@@ -207,29 +207,29 @@ func TestAddDifferentListenerForDifferentEvents(t *testing.T) {
 
 	// go fire events
 	sendEvents := func(event string, doneChan chan uint64, offset uint64) {
-		var sentsum uint64 = 0
-		for i := offset; i<= offset + uint64(999) ; i++ {
-			sentsum += i
+		var sentSum uint64 = 0
+		for i := offset; i <= offset+uint64(999); i++ {
+			sentSum += i
 			evsw.FireEvent(event, i)
 		}
-		doneChan <- sentsum
+		doneChan <- sentSum
 		close(doneChan)
 		return
 	}
 	go sendEvents("event1", doneSending1, uint64(1))
 	go sendEvents("event2", doneSending2, uint64(1001))
 	go sendEvents("event3", doneSending3, uint64(2001))
-	checksumevent1 := <-doneSending1
-	checksumevent2 := <-doneSending2
-	checksumevent3 := <-doneSending3
-	checksum1 := checksumevent1 + checksumevent2 + checksumevent3
-	checksum2 := checksumevent2 + checksumevent3
+	checkSumEvent1 := <-doneSending1
+	checkSumEvent2 := <-doneSending2
+	checkSumEvent3 := <-doneSending3
+	checkSum1 := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
+	checkSum2 := checkSumEvent2 + checkSumEvent3
 	close(numbers1)
 	close(numbers2)
-	eventsum1 := <-doneSum1
-	eventsum2 := <-doneSum2
-  if checksum1 != eventsum1 ||
-	 	checksum2 != eventsum2 {
+	eventSum1 := <-doneSum1
+	eventSum2 := <-doneSum2
+	if checkSum1 != eventSum1 ||
+		checkSum2 != eventSum2 {
 		t.Errorf("Not all messages sent were received for different listeners to different events.\n")
 	}
 }
@@ -248,11 +248,11 @@ func TestAddAndRemoveListenerForEvents(t *testing.T) {
 	numbers2 := make(chan uint64, 4)
 	// subscribe two listener to three events
 	evsw.AddListenerForEvent("listener", "event1",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	// collect received events for event1
@@ -283,28 +283,28 @@ func TestAddAndRemoveListenerForEvents(t *testing.T) {
 	}()
 	// go fire events
 	sendEvents := func(event string, doneChan chan uint64, offset uint64) {
-		var sentsum uint64 = 0
-		for i := offset; i<= offset + uint64(999) ; i++ {
-			sentsum += i
+		var sentSum uint64 = 0
+		for i := offset; i <= offset+uint64(999); i++ {
+			sentSum += i
 			evsw.FireEvent(event, i)
 		}
-		doneChan <- sentsum
+		doneChan <- sentSum
 		close(doneChan)
 		return
 	}
 	go sendEvents("event1", doneSending1, uint64(1))
-	checksumevent1 := <-doneSending1
+	checkSumEvent1 := <-doneSending1
 	// after sending all event1, unsubscribe for all events
 	evsw.RemoveListener("listener")
 	go sendEvents("event2", doneSending2, uint64(1001))
-	checksumevent2 := <-doneSending2
+	checkSumEvent2 := <-doneSending2
 	close(numbers1)
 	close(numbers2)
-	eventsum1 := <-doneSum1
-	eventsum2 := <-doneSum2
-  if checksumevent1 != eventsum1 ||
-	 	checksumevent2 != uint64(1500500) ||
-		eventsum2 != uint64(0) {
+	eventSum1 := <-doneSum1
+	eventSum2 := <-doneSum2
+	if checkSumEvent1 != eventSum1 ||
+		checkSumEvent2 != uint64(1500500) ||
+		eventSum2 != uint64(0) {
 		t.Errorf("Not all messages sent were received or unsubscription did not register.\n")
 	}
 }
@@ -324,27 +324,27 @@ func TestRemoveListenersAsync(t *testing.T) {
 	numbers2 := make(chan uint64, 4)
 	// subscribe two listener to three events
 	evsw.AddListenerForEvent("listener1", "event1",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener1", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener1", "event3",
-		func (data EventData) {
+		func(data EventData) {
 			numbers1 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener2", "event1",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener2", "event2",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	evsw.AddListenerForEvent("listener2", "event3",
-		func (data EventData) {
+		func(data EventData) {
 			numbers2 <- data.(uint64)
 		})
 	// collect received events for event1
@@ -375,12 +375,12 @@ func TestRemoveListenersAsync(t *testing.T) {
 	}()
 	// go fire events
 	sendEvents := func(event string, doneChan chan uint64, offset uint64) {
-		var sentsum uint64 = 0
-		for i := offset; i<= offset + uint64(999) ; i++ {
-			sentsum += i
+		var sentSum uint64 = 0
+		for i := offset; i <= offset+uint64(999); i++ {
+			sentSum += i
 			evsw.FireEvent(event, i)
 		}
-		doneChan <- sentsum
+		doneChan <- sentSum
 		close(doneChan)
 		return
 	}
@@ -392,7 +392,7 @@ func TestRemoveListenersAsync(t *testing.T) {
 			eventNumber := r1.Intn(3) + 1
 			go evsw.AddListenerForEvent(fmt.Sprintf("listener%v", listenerNumber),
 				fmt.Sprintf("event%v", eventNumber),
-				func (_ EventData) {})
+				func(_ EventData) {})
 		}
 	}
 	removeListenersStress := func() {
@@ -408,17 +408,17 @@ func TestRemoveListenersAsync(t *testing.T) {
 	go removeListenersStress()
 	go sendEvents("event2", doneSending2, uint64(1001))
 	go sendEvents("event3", doneSending3, uint64(2001))
-	checksumevent1 := <-doneSending1
-	checksumevent2 := <-doneSending2
-	checksumevent3 := <-doneSending3
-	checksum1 := checksumevent1 + checksumevent2 + checksumevent3
-	checksum2 := checksumevent1 + checksumevent2 + checksumevent3
+	checkSumEvent1 := <-doneSending1
+	checkSumEvent2 := <-doneSending2
+	checkSumEvent3 := <-doneSending3
+	checkSum1 := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
+	checkSum2 := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
 	close(numbers1)
 	close(numbers2)
-	eventsum1 := <-doneSum1
-	eventsum2 := <-doneSum2
-  if checksum1 != eventsum1 ||
-	 	checksum2 != eventsum2 {
+	eventSum1 := <-doneSum1
+	eventSum2 := <-doneSum2
+	if checkSum1 != eventSum1 ||
+		checkSum2 != eventSum2 {
 		t.Errorf("Not all messages sent were received.\n")
 	}
 }
