@@ -387,7 +387,7 @@ func TestRemoveListenersAsync(t *testing.T) {
 	addListenersStress := func() {
 		s1 := rand.NewSource(time.Now().UnixNano())
 		r1 := rand.New(s1)
-		for k := uint16(0); k < 2000; k++ {
+		for k := uint16(0); k < 400; k++ {
 			listenerNumber := r1.Intn(100) + 3
 			eventNumber := r1.Intn(3) + 1
 			go evsw.AddListenerForEvent(fmt.Sprintf("listener%v", listenerNumber),
@@ -398,11 +398,9 @@ func TestRemoveListenersAsync(t *testing.T) {
 	removeListenersStress := func() {
 		s2 := rand.NewSource(time.Now().UnixNano())
 		r2 := rand.New(s2)
-		for k := uint16(0); k < 1000; k++ {
+		for k := uint16(0); k < 80; k++ {
 			listenerNumber := r2.Intn(100) + 3
-			eventNumber := r2.Intn(3) + 1
-			go evsw.RemoveListenerForEvent(fmt.Sprintf("listener%v", listenerNumber),
-				fmt.Sprintf("event%v", eventNumber))
+			go evsw.RemoveListener(fmt.Sprintf("listener%v", listenerNumber))
 		}
 	}
 	go addListenersStress()
