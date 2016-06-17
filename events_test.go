@@ -287,14 +287,13 @@ func TestRemoveListenersAsync(t *testing.T) {
 	checkSumEvent1 := <-doneSending1
 	checkSumEvent2 := <-doneSending2
 	checkSumEvent3 := <-doneSending3
-	checkSum1 := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
-	checkSum2 := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
+	checkSum := checkSumEvent1 + checkSumEvent2 + checkSumEvent3
 	close(numbers1)
 	close(numbers2)
 	eventSum1 := <-doneSum1
 	eventSum2 := <-doneSum2
-	if checkSum1 != eventSum1 ||
-		checkSum2 != eventSum2 {
+	if checkSum != eventSum1 ||
+		checkSum != eventSum2 {
 		t.Errorf("Not all messages sent were received.\n")
 	}
 }
